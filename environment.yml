@@ -1,0 +1,11 @@
+name: deployable_scraper
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - numpy
+  - sqlite
+  - pip:
+    - git+https://github.com/Mo1l/scraping_charger_data.git
+    #- -e 
+  
