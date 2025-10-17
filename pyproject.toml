@@ -1,19 +1,18 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "deployable_scraper"
 version = "0.0.1"
-description = "A deployable web scraper."
+requires-python = ">=3.8"
 dependencies = [
-    'sqlite',
-    'numpy',
+    "numpy",
     "scraping-charger-data @ git+https://github.com/Mo1l/scraping_charger_data.git"
 ]
 
 [project.urls]
-Homepage = "https://github.com/nikol/deployable_scraper"
+Homepage = "https://github.com/Mo1l/deployable_scraper"
 
-[tool.setuptools]
-packages = ["deployable_scraper"]
-
-[build-system]
-requires = ["setuptools>=61.0", "wheel"]
-build-backend = "setuptools.build_meta"
+[tool.setuptools.packages.find]
+where = ["src"]

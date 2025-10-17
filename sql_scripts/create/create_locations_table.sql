@@ -12,4 +12,4 @@ CREATE TABLE locations (
     PRIMARY KEY (locationId, revision)
 );
 
-CREATE INDEX idx_location_revision_speed_plugtype ON locations(locationId, revision)
+CREATE INDEX idx_locationId_revision ON locations(locationId, revision)
