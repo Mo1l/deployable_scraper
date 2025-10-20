@@ -36,7 +36,7 @@ class db:
 
         print(f'database {self.name} initialized as {self.name}.db')
 
-    def insert_row(self, table_name, data_dict):
+    def insert_row(self, table_name, row_dict):
         """Insert a row into specified table"""
         
         conn = sqlite3.connect(self.name + '.db')
@@ -47,9 +47,9 @@ class db:
                
         try:
             # Build the INSERT statement dynamically
-            columns = ', '.join(data_dict.keys())
-            placeholders = ', '.join(['?' for _ in data_dict])
-            values = list(data_dict.values())
+            columns = ', '.join(row_dict.keys())
+            placeholders = ', '.join(['?' for _ in row_dict])
+            values = list(row_dict.values())
             
             
             sql = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders})"
@@ -66,3 +66,75 @@ class db:
             
         finally:
             conn.close()
+
+    def insert_row_in_locations_table(self, location):
+            # adding these to ensure that if there is ever a case v_coords coordinates or timestamp does not exist then
+            # we can still call with get and get nan values
+            location_coords = location.get('coordinates', {})
+            location_timestamp = location.get('timestamp', {})
+            
+            data_row = {
+                'locationId': location.get('locationId') ,
+                'revision': location.get('revision'), 
+                'name': location.get('name'),
+                'partnerStatus': location.get('partnerStatus'),
+                'isRoamingPartner': location.get('isRoamingPartner'),
+                'origin': location.get('origin'),
+                'coords_lat': location_coords.get('lat'),
+                'coords_lng': location_coords.get('lng'),
+                'ts_seconds': location_timestamp.get('seconds'),
+                'ts_nanoseconds': location_timestamp.get('nanoseconds'),
+            }
+            
+            self.insert_row('locations', row_dict=data_row)
+
+    def insert_row_in_evseIds_table(self, location, evse:dict): 
+        """
+        The evse object is a dict and is a value returned from the 'evses' object. 
+        """
+        connectors = evse['connectors']
+        for evseConnectorId in connectors.keys():
+            # I expect there is only one ky in connectors but if there is more I should get an unique error.
+            plug_info=connectors[evseConnectorId]
+
+            data_row = {
+            'locationId': location.get('locationId', 'returnsError'),
+            'revision': location.get('revision', 'returnsError'),
+            'evseId': evse.get('evseId', 'returnsError'),
+            'isRoamingPartner': location.get('isRoamingPartner'),
+            'isRoamingAllowed': location.get('publicAccess',{}).get('isRoamingAllowed'),
+            'visibility': location.get('visibility'),
+            'vendorName': evse.get('vendorName'),
+            'evseConnectorId': plug_info.get('evseConnectorId'), 
+            'plugType': plug_info.get('plugType'), 
+            'powerType': plug_info.get('powerType'),
+            'maxPowerKw': plug_info.get('maxPowerKw'),
+            'connectorId': plug_info.get('connectorId'),
+            'speed': plug_info.get('speed'),
+            }
+            success, error=self.insert_row(table_name='evseIds', row_dict=data_row)
+
+            return success, error
+
+    def insert_row_in_availabilityLog_table(self, loc_avail_query):
+        evses = loc_avail_query.get('availability', {}).get('evses')
+        evses_pluginfo = loc_avail_query.get('evses')
+        # now we want to loop over all the evses
+        for evse_key in evses.keys():
+            evse = evses.get(evse_key)
+            evse_pluginfo=evses_pluginfo.get(evse_key)
+            
+            # Construct a data row
+            data_row = {
+            'locationId': loc_avail_query.get('locationId', 'returnsError'),
+            'revision': loc_avail_query.get('revision', 'returnsError'),
+            'evseId': evse.get('evseId', 'returnsError'),
+            'status': evse.get('status', 'returnsNoError'),
+            'timestamp': evse.get('timestamp')
+            }
+            success = False
+            success, error=self.insert_row('availabilityLog', row_dict=data_row)
+
+            if (not success) and (error.sqlite_errorcode == 787):
+                self.insert_row_in_evseIds_table(location=loc_avail_query, evse=evse_pluginfo)
+                success, error=self.insert_row('availabilityLog', row_dict=data_row)
