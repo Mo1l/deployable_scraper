@@ -23,10 +23,11 @@ class db:
         script_order = [
             'create_locations_table.sql',
             'create_evseIds_table.sql',
-            'create_connectorCounts_table.sql',
+            'create_connectorGroups_table.sql',
             'create_availabilityLog_table.sql',
             'create_availabilityAggregated_table.sql',
         ]
+        breakpoint()
         for script_name in script_order: 
             with open('sql_scripts/create/' + script_name, 'r') as f:
                 print(f'executing script {script_name}')
@@ -68,25 +69,41 @@ class db:
             conn.close()
 
     def insert_row_in_locations_table(self, location):
-            # adding these to ensure that if there is ever a case v_coords coordinates or timestamp does not exist then
-            # we can still call with get and get nan values
-            location_coords = location.get('coordinates', {})
-            location_timestamp = location.get('timestamp', {})
-            
-            data_row = {
-                'locationId': location.get('locationId') ,
-                'revision': location.get('revision'), 
-                'name': location.get('name'),
-                'partnerStatus': location.get('partnerStatus'),
-                'isRoamingPartner': location.get('isRoamingPartner'),
-                'origin': location.get('origin'),
-                'coords_lat': location_coords.get('lat'),
-                'coords_lng': location_coords.get('lng'),
-                'ts_seconds': location_timestamp.get('seconds'),
-                'ts_nanoseconds': location_timestamp.get('nanoseconds'),
-            }
-            
-            self.insert_row('locations', row_dict=data_row)
+        # adding these to ensure that if there is ever a case v_coords coordinates or timestamp does not exist then
+        # we can still call with get and get nan values
+        location_coords = location.get('coordinates', {})
+        location_timestamp = location.get('timestamp', {})
+        
+        data_row = {
+            'locationId': location.get('locationId') ,
+            'revision': location.get('revision'), 
+            'name': location.get('name'),
+            'partnerStatus': location.get('partnerStatus'),
+            'isRoamingPartner': location.get('isRoamingPartner'),
+            'origin': location.get('origin'),
+            'coords_lat': location_coords.get('lat'),
+            'coords_lng': location_coords.get('lng'),
+            'ts_seconds': location_timestamp.get('seconds'),
+            'ts_nanoseconds': location_timestamp.get('nanoseconds'),
+        }
+        
+        self.insert_row('locations', row_dict=data_row)
+
+    def insert_row_in_connectorGroup_table(self, location:dict, connectorGroup:int, connectorCount:dict):
+
+        data_row = {
+            'locationId': location.get('locationId') ,
+            'revision': location.get('revision'), 
+            'connectorGroup': connectorGroup,
+            'plugType': connectorCount.get('plugType'), 
+            'speed': connectorCount.get('speed'),
+            'count': connectorCount.get('count'),
+        }
+        
+        success, error=self.insert_row('connectorGroups', row_dict=data_row)
+
+        return success, error
+
 
     def insert_row_in_evseIds_table(self, location, evse:dict): 
         """
@@ -114,8 +131,6 @@ class db:
             }
             success, error=self.insert_row(table_name='evseIds', row_dict=data_row)
 
-            return success, error
-
     def insert_row_in_availabilityLog_table(self, loc_avail_query):
         evses = loc_avail_query.get('availability', {}).get('evses')
         evses_pluginfo = loc_avail_query.get('evses')
@@ -138,3 +153,6 @@ class db:
             if (not success) and (error.sqlite_errorcode == 787):
                 self.insert_row_in_evseIds_table(location=loc_avail_query, evse=evse_pluginfo)
                 success, error=self.insert_row('availabilityLog', row_dict=data_row)
+
+    def get_chargerIds_by_type(self, charger_type:str):
+        pass # has to be created

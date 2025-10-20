@@ -3,12 +3,12 @@
 CREATE TABLE availabilityAggregated (
     locationId TEXT, 
     revision INTEGER,
-    chargingGroup INTEGER, 
+    connectorGroup INTEGER, 
     registeredTime DATETIME DEFAULT CURRENT_TIMESTAMP,
     availableCount INTEGER,
     totalCount INTEGER,
-    FOREIGN KEY (locationId, revision, chargingGroup) 
-        REFERENCES connectorCounts(locationId, revision, chargingGroup)
+    FOREIGN KEY (locationId, revision, connectorGroup) 
+        REFERENCES connectorGroups(locationId, revision, connectorGroup)
 );
 
 
