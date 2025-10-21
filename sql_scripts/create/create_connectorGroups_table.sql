@@ -2,6 +2,7 @@ CREATE TABLE connectorGroups (
     locationId TEXT, 
     revision INTEGER,
     connectorGroup INTEGER,  
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     plugType TEXT, 
     speed TEXT, 
     count INT,

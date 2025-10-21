@@ -3,6 +3,7 @@ CREATE TABLE evseIds (
     locationId TEXT, 
     revision INTEGER, 
     evseId TEXT,  -- info within 'evses'
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     -- 
     isRoamingPartner BOOLEAN, 
     isRoamingAllowed BOOLEAN, 

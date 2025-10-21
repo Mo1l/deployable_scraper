@@ -3,7 +3,7 @@ CREATE TABLE availabilityLog (
     locationId TEXT, 
     revision INTEGER,
     evseId TEXT, 
-    registered DATETIME DEFAULT CURRENT_TIMESTAMP,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     -- info within 'availibility' within 'evses'
     status TEXT, 
     timestamp TEXT, 

@@ -1,6 +1,5 @@
 from test_tools import test_db as db
 import json
-import numpy as np
 import sqlite3 
 
 # creating test environment.

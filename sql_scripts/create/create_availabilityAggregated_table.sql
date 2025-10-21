@@ -4,7 +4,7 @@ CREATE TABLE availabilityAggregated (
     locationId TEXT, 
     revision INTEGER,
     connectorGroup INTEGER, 
-    registeredTime DATETIME DEFAULT CURRENT_TIMESTAMP,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     availableCount INTEGER,
     totalCount INTEGER,
     FOREIGN KEY (locationId, revision, connectorGroup) 

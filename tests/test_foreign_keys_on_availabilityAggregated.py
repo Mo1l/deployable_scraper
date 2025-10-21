@@ -37,7 +37,7 @@ availability_agg_insert = {
     'chargingGroup': 1, 
     'availableCount': 1,
     'totalCount': 2,
-    'registeredTime': 100
+    'createdAtTime': 100
 }
 success, error=test_db.insert_row('availabilityAggregated', availability_agg_insert)
 
@@ -50,7 +50,7 @@ wrong_availability_agg_insert = {
     'chargingGroup': 9999, 
     'availableCount': 1,
     'totalCount': 2,
-    'registeredTime': 100
+    'createdAtTime': 100
 }
 
 

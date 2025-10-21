@@ -2,6 +2,7 @@ CREATE TABLE locations (
     locationId TEXT, 
     revision INTEGER, 
     name TEXT, 
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     partnerStatus TEXT, 
     isRoamingPartner BOOLEAN, 
     origin TEXT, 
