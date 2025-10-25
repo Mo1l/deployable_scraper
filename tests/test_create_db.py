@@ -1,4 +1,4 @@
-from db_tools import db
+from test_tools import test_db as db
 
 
 test_db = db(name='test')
@@ -10,3 +10,5 @@ if test_db.check_if_db_exists():
 test_db.create_db()
 
 assert test_db.check_if_db_exists(), f'{test_db.name}.db was not created'
+
+test_db.clean_up_db()

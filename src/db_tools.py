@@ -7,16 +7,16 @@ class db:
         self.name = name
 
     def check_if_db_exists(self):  
-        _exists=os.path.exists(self.name+'.db')
+        _exists=os.path.exists(f'{self.name}.db')
         return _exists
     
     def create_db(self): 
         if self.check_if_db_exists():
             print('database {self.db_name} already exists.')
-            pass
+            return 
 
         # connect to db 
-        conn = sqlite3.connect(self.name +'.db')
+        conn = sqlite3.connect(f'{self.name}.db')
         cursor = conn.cursor()
         
         # scripts to execute in specific order
@@ -26,8 +26,9 @@ class db:
             'create_connectorGroups_table.sql',
             'create_availabilityLog_table.sql',
             'create_availabilityAggregated_table.sql',
+            'create_latest_connectorGroups_newest_revision_view.sql',
         ]
-        breakpoint()
+
         for script_name in script_order: 
             with open('sql_scripts/create/' + script_name, 'r') as f:
                 print(f'executing script {script_name}')
@@ -40,7 +41,7 @@ class db:
     def insert_row(self, table_name, row_dict):
         """Insert a row into specified table"""
         
-        conn = sqlite3.connect(self.name + '.db')
+        conn = sqlite3.connect(f'{self.name}.db')
         cursor = conn.cursor()
 
         # ensures that foreign_keys are always enabled.
@@ -154,5 +155,21 @@ class db:
                 self.insert_row_in_evseIds_table(location=loc_avail_query, evse=evse_pluginfo)
                 success, error=self.insert_row('availabilityLog', row_dict=data_row)
 
-    def get_chargerIds_by_type(self, charger_type:str):
-        pass # has to be created
+    def select_locationIds_by_speed(self, speed:str):
+        """Get locationIds with specific speed (latest revision only)"""
+
+        with open('sql_scripts/select/select_locationIds_by_plugType.sql', 'r') as f:
+            sql = f.read()
+
+        conn = sqlite3.connect(f'{self.name}.db')
+        cursor = conn.cursor()
+        try:
+            cursor.execute(sql, (speed,))
+            results = cursor.fetchall()
+        except:
+            pass
+        
+        finally: 
+            conn.close()
+        
+        return [row[0] for row in results]  # Extract locationIds

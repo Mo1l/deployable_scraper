@@ -6,6 +6,7 @@ dependencies:
   - numpy
   - sqlite
   - pytest
+  - schedule
   - pip:
       - git+https://github.com/Mo1l/scraping_charger_data.git
       - -e .

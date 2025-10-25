@@ -9,7 +9,7 @@ test_db.create_db()
 test_db.insert_location_test_data()
 test_db.insert_connectorGroup_test_data()
 
-# ['Standard', 'Fast', 'Rapid']
+# ['Standard', 'Fast', 'Rapid', 'Unknown']
 slocids=test_db.select_locationIds_by_speed('Standard')
 flocids=test_db.select_locationIds_by_speed('Fast')
 rlocids=test_db.select_locationIds_by_speed('Rapid')
@@ -22,7 +22,7 @@ ucount=len(ulocids)
 
 tcount=scount + fcount + rcount + ucount 
 
-conn = sqlite3.connect(test_db.name + '.db')
+conn = sqlite3.connect(f'{test_db.name}.db')
 cursor = conn.cursor()    
 cursor.execute(f"SELECT COUNT(*) FROM latest_connector_groups")
 ncount = cursor.fetchone()[0]

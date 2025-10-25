@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  scraper:
+    build: .
+    volumes:
+      - ./data/db:/app/data/db
+    command: python src/main_scripts/run_scraper_schedule.py
+    working_dir: /app
+    environment:
+      - RUN_MODE=scheduled      # Scheduling mode
+      - standard_minute_interval=30
+      - fast_minute_interval=5
+      - rapid_minute_interval=5
+    restart: unless-stopped

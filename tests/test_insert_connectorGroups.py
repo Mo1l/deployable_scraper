@@ -7,7 +7,7 @@ test_db.insert_location_test_data()
 test_db.insert_connectorGroup_test_data()
 
 
-conn = sqlite3.connect(test_db.name + '.db')
+conn = sqlite3.connect(f'{test_db.name}.db')
 cursor = conn.cursor()    
 cursor.execute(f"SELECT COUNT(*) FROM ConnectorGroups")
 count = cursor.fetchone()[0]

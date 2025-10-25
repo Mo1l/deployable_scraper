@@ -14,7 +14,7 @@ for k in availability.keys():
     v = availability[k]
     test_db.insert_row_in_availabilityLog_table(loc_avail_query=v)
 
-conn = sqlite3.connect(test_db.name + '.db')
+conn = sqlite3.connect(f'{test_db.name}.db')
 cursor = conn.cursor()    
 cursor.execute(f"SELECT COUNT(*) FROM availabilityLog")
 count_availabilityLog = cursor.fetchone()[0]
