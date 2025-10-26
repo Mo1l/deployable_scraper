@@ -8,6 +8,7 @@ dependencies:
   - pytest
   - schedule
   - pip:
+      - pre-commit
       - git+https://github.com/Mo1l/scraping_charger_data.git
       - -e .
   
