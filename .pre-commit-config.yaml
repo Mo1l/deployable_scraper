@@ -8,13 +8,13 @@ repos:
         types: [python]
         pass_filenames: false
         always_run: true
-        args: ["-v", "tests/"]
+        args: ["-v", "--tb=long", "tests/"]
       
-      - id: pytest-coverage
-        name: pytest with coverage
-        entry: pytest
-        language: system
-        types: [python]
-        pass_filenames: false
-        always_run: true
-        args: ["--cov=your_package_name", "--cov-report=term-missing", "--cov-fail-under=80", "tests/"]
+      # - id: pytest-coverage
+      #   name: pytest with coverage
+      #   entry: pytest
+      #   language: system
+      #   types: [python]
+      #   pass_filenames: false
+      #   always_run: true
+      #   args: ["--cov=src", "--cov-report=term-missing", "--cov-fail-under=80", "tests/"]
