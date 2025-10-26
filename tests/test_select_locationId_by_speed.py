@@ -24,7 +24,7 @@ tcount=scount + fcount + rcount + ucount
 
 conn = sqlite3.connect(f'{test_db.name}.db')
 cursor = conn.cursor()    
-cursor.execute(f"SELECT COUNT(*) FROM latest_connector_groups")
+cursor.execute(f"SELECT COUNT(*) FROM (SELECT DISTINCT locationId, speed FROM latest_connector_groups);")
 ncount = cursor.fetchone()[0]
 assert tcount  ==  ncount, f'number of unique (location, connectorGroup) pairs should be 3145, but found {tcount}'
 

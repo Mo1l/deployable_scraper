@@ -1,6 +1,5 @@
 from test_tools import test_db as db
 
-
 test_db = db(name='test')
 
 if test_db.check_if_db_exists():

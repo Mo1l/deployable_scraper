@@ -1,5 +1,6 @@
 import os
 import sqlite3
+from importlib import resources
 # Create a function that checks if db. exist. If not then initialize the db. 
 
 class db:
@@ -30,9 +31,8 @@ class db:
         ]
 
         for script_name in script_order: 
-            with open('sql_scripts/create/' + script_name, 'r') as f:
-                print(f'executing script {script_name}')
-                cursor.executescript(f.read())
+            sql_script = resources.read_text('sql_scripts.create', script_name)
+            cursor.executescript(sql_script)
         conn.commit()
         conn.close()
 
@@ -158,13 +158,12 @@ class db:
     def select_locationIds_by_speed(self, speed:str):
         """Get locationIds with specific speed (latest revision only)"""
 
-        with open('sql_scripts/select/select_locationIds_by_plugType.sql', 'r') as f:
-            sql = f.read()
+        sql_script=resources.read_text('sql_scripts.select', 'select_locationIds_by_plugType.sql')
 
         conn = sqlite3.connect(f'{self.name}.db')
         cursor = conn.cursor()
         try:
-            cursor.execute(sql, (speed,))
+            cursor.execute(sql_script, (speed,))
             results = cursor.fetchall()
         except:
             pass
