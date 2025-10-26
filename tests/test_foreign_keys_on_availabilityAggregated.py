@@ -1,4 +1,4 @@
-from db_tools import db
+from test_tools import test_db as db
 
 # Setup test db. 
 test_db=db(name='test')
@@ -25,19 +25,19 @@ test_db.insert_row('locations', loc_insert)
 connector_count_insert = {
     'locationId': 'ABC',
     'revision': 1, 
-    'chargingGroup': 1, 
+    'connectorGroup': 1, 
 }
-test_db.insert_row('connectorCounts', connector_count_insert)
+test_db.insert_row('connectorGroups', connector_count_insert)
 
 
 ## insert create_availabilityAggregated_table with right parameters
 availability_agg_insert = {
     'locationId': 'ABC',
     'revision': 1, 
-    'chargingGroup': 1, 
+    'connectorGroup': 1, 
     'availableCount': 1,
     'totalCount': 2,
-    'createdAtTime': 100
+    'createdAt': 100
 }
 success, error=test_db.insert_row('availabilityAggregated', availability_agg_insert)
 
@@ -47,10 +47,10 @@ assert success, 'Could not insert correct data into AvailabilityLog'
 wrong_availability_agg_insert = {
     'locationId': 'ABC',
     'revision': 1, 
-    'chargingGroup': 9999, 
+    'connectorGroup': 9999, 
     'availableCount': 1,
     'totalCount': 2,
-    'createdAtTime': 100
+    'createdAt': 100
 }
 
 
