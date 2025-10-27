@@ -12,10 +12,11 @@ RUN mkdir -p ./data/db
 
 # Copy pyproject.toml
 COPY pyproject.toml ./
-
-# This will now work because git is installed
-RUN pip install -e .
-
-# Copy the rest
 COPY src/ ./src/
 
+# This will now work because git is installed
+RUN pip install -e . -v 
+
+# Copy the rest
+
+CMD ["python", "src/main_scripts/run_scraper_schedule.py"]
