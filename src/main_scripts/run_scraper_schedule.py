@@ -84,6 +84,7 @@ if __name__ == "__main__":
         standard_minute_interval = int(os.environ.get('standard_minute_interval'))
         fast_minute_interval=int(os.environ.get('fast_minute_interval'))
         rapid_minute_interval=int(os.environ.get('rapid_minute_interval'))
+        location_day_interval=int(os.environ.get('location_day_interval'))
 
         # Set the schedule - availability: 
         schedule.every(standard_minute_interval).minutes.do(run_avail, speed='Standard')
@@ -91,7 +92,7 @@ if __name__ == "__main__":
         schedule.every(rapid_minute_interval).minutes.do(run_avail, speed='Rapid')
 
         # set the schedule - locations
-        schedule.every(7).days.do(run_locs)
+        schedule.every(location_day_interval).days.do(run_locs)
 
         # Keep running scheduled tasks
         while True:

@@ -10,7 +10,7 @@ dependencies = [
     "numpy",
     "schedule",
     "sqlite",
-    "scraping-charger-data @ git+https://github.com/Mo1l/scraping_charger_data.git"
+    "scraping-charger-data @ git+https://github.com/NikolajMLund/scraping_charger_data.git"
 ]
 
 [project.optional-dependencies]
@@ -19,7 +19,7 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/Mo1l/deployable_scraper"
+Homepage = "https://github.com/NikolajMLund/deployable_scraper"
 
 [tool.setuptools.packages.find]
 where = ["src"]

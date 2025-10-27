@@ -1,7 +1,0 @@
-# supplying a requirements.txt file too. 
-# This is needed for docker containers. 
-python
-numpy
-sqlite
-schedule
-git+git://github.com/Mo1l/scraping_charger_data.git
