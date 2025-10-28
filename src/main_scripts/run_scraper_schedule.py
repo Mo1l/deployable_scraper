@@ -32,6 +32,7 @@ def run_avail(speed):
         identifiers=locids,
         url_re='https://clever.dk/api/chargers/location/{}',
         out_path='./data/',
+        save_json = False,
     )
 
     # run scraper
@@ -49,10 +50,10 @@ def run_avail(speed):
         ntotalsuccess += nlocsuccess
         ntotalplugs += nplugs
     
-    logger.info(f"Availability scrape completed for speed: {speed}, Inserted {ntotalsuccess} rows. Found ids for {ntotalplugs} plugs.")
+    logger.info(f"Availability db-insertion completed for speed: {speed}, Inserted {ntotalsuccess} rows. Found ids for {ntotalplugs} plugs.")
 
 
-def run_locs():
+def run_locations():
     logger.info("Starting locations scrape")
     
     locations_scraper=loc_scraper(
@@ -60,6 +61,7 @@ def run_locs():
         identifiers=['locations'],
         url_re='https://clever.dk/api/chargers/locations',
         out_path='./data/',
+        save_json = False,
     )
 
     # Query
@@ -108,7 +110,7 @@ if __name__ == "__main__":
     run_mode = os.environ.get('RUN_MODE', 'once') # defaults to 'once if RUN_MODE does not exist
 
     # On startup always populate locations table, and initialize database if it does not exist
-    run_locs()
+    run_locations()
 
     if run_mode == 'scheduled':
         logger.info('Initializing run schedule')
@@ -130,7 +132,7 @@ if __name__ == "__main__":
         schedule.every(rapid_minute_interval).minutes.do(run_avail, speed='Rapid')
 
         # set the schedule - locations
-        schedule.every(location_day_interval).days.do(run_locs)
+        schedule.every(location_day_interval).days.do(run_locations)
 
         logger.info("Schedule initialized. Starting scheduled execution loop")
 

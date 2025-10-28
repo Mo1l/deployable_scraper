@@ -11,6 +11,6 @@ services:
       - LOG_LEVEL=INFO          # how much info to log
       - standard_minute_interval=30
       - fast_minute_interval=15
-      - rapid_minute_interval=8
+      - rapid_minute_interval=5
       - location_days_interval=7
     restart: unless-stopped
