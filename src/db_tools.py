@@ -64,14 +64,12 @@ class db:
             cursor.execute(sql, values)
             conn.commit()
             
-            print(f"✅ Inserted row into {table_name}")
-            logger.debug(f"Successfully inserted row into {table_name}")
+            logger.debug(f"✅ Successfully inserted row into {table_name}")
 
             return True, None
             
         except sqlite3.Error as e:
-            print(f"❌ Error inserting into {table_name}: {e}")
-            logger.debug(f"Error inserting into {table_name}: {e}", exc_info=True)
+            logger.debug(f"❌ Error inserting into {table_name}: {e}", exc_info=True)
 
             conn.rollback()
             return False, e
