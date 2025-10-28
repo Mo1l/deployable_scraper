@@ -8,7 +8,7 @@ RUN apt-get update && \
 WORKDIR /app
 
 # create data/db
-RUN mkdir -p ./data/db
+RUN mkdir -p ./data/db ./data/logs
 
 # Copy pyproject.toml
 COPY pyproject.toml ./

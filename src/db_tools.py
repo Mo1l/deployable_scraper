@@ -1,7 +1,10 @@
 import os
 import sqlite3
+import logging
 from importlib import resources
-# Create a function that checks if db. exist. If not then initialize the db. 
+
+# Create module-level logger
+logger = logging.getLogger(__name__)
 
 class db:
     def __init__(self, name:str):
@@ -13,9 +16,11 @@ class db:
     
     def create_db(self): 
         if self.check_if_db_exists():
-            print('database {self.db_name} already exists.')
+            logger.debug(f"Database {self.name} already exists, skipping creation")
             return 
 
+        logger.debug(f"Creating database: {self.name}")
+        
         # connect to db 
         conn = sqlite3.connect(f'{self.name}.db')
         cursor = conn.cursor()
@@ -31,12 +36,13 @@ class db:
         ]
 
         for script_name in script_order: 
+            logger.debug(f"Executing script: {script_name}")
             sql_script = resources.read_text('sql_scripts.create', script_name)
             cursor.executescript(sql_script)
         conn.commit()
         conn.close()
 
-        print(f'database {self.name} initialized as {self.name}.db')
+        logger.info(f"Database initialized successfully at {self.name}.db")
 
     def insert_row(self, table_name, row_dict):
         """Insert a row into specified table"""
@@ -59,10 +65,14 @@ class db:
             conn.commit()
             
             print(f"✅ Inserted row into {table_name}")
+            logger.debug(f"Successfully inserted row into {table_name}")
+
             return True, None
             
         except sqlite3.Error as e:
             print(f"❌ Error inserting into {table_name}: {e}")
+            logger.debug(f"Error inserting into {table_name}: {e}", exc_info=True)
+
             conn.rollback()
             return False, e
             
@@ -110,7 +120,7 @@ class db:
         """
         The evse object is a dict and is a value returned from the 'evses' object. 
         """
-        connectors = evse['connectors']
+        connectors = evse.get('connectors', {})
         for evseConnectorId in connectors.keys():
             # I expect there is only one ky in connectors but if there is more I should get an unique error.
             plug_info=connectors[evseConnectorId]
@@ -133,30 +143,57 @@ class db:
             success, error=self.insert_row(table_name='evseIds', row_dict=data_row)
 
     def insert_row_in_availabilityLog_table(self, loc_avail_query):
-        evses = loc_avail_query.get('availability', {}).get('evses')
+        evses = loc_avail_query.get('availability', {}).get('evses', {})
         evses_pluginfo = loc_avail_query.get('evses')
+        nplugs = len(evses_pluginfo.keys())
         # now we want to loop over all the evses
+        
+        # XXX: This skips any stations where there is no availability data.
+        # TODO: Add logging if this if this occurs. That is if there is no availability data.
+        if len(evses.keys()) == 0: 
+            logger.warning(
+                "No availability data for locationId=%s",
+                loc_avail_query.get('locationId'),
+            )
+        
+        # keep count of successes: 
+        nsuccess = 0
         for evse_key in evses.keys():
-            evse = evses.get(evse_key)
-            evse_pluginfo=evses_pluginfo.get(evse_key)
-            
-            # Construct a data row
-            data_row = {
-            'locationId': loc_avail_query.get('locationId', 'returnsError'),
-            'revision': loc_avail_query.get('revision', 'returnsError'),
-            'evseId': evse.get('evseId', 'returnsError'),
-            'status': evse.get('status', 'returnsNoError'),
-            'timestamp': evse.get('timestamp')
-            }
-            success = False
-            success, error=self.insert_row('availabilityLog', row_dict=data_row)
-
-            if (not success) and (error.sqlite_errorcode == 787):
-                self.insert_row_in_evseIds_table(location=loc_avail_query, evse=evse_pluginfo)
+            try:
+                evse = evses.get(evse_key)
+                evse_pluginfo=evses_pluginfo.get(evse_key, {})
+                
+                # Construct a data row
+                data_row = {
+                'locationId': loc_avail_query.get('locationId', 'returnsError'),
+                'revision': loc_avail_query.get('revision', 'returnsError'),
+                'evseId': evse.get('evseId', 'returnsError'),
+                'status': evse.get('status', 'returnsNoError'),
+                'timestamp': evse.get('timestamp')
+                }
+                success = False
                 success, error=self.insert_row('availabilityLog', row_dict=data_row)
+
+                if (not success) and (error.sqlite_errorcode == 787):
+                    self.insert_row_in_evseIds_table(location=loc_avail_query, evse=evse_pluginfo)
+                    success, error=self.insert_row('availabilityLog', row_dict=data_row)
+                
+                # add to nsuccess
+                nsuccess += int(success)
+
+            except AttributeError as e:
+                logger.warning(
+                    'AttributeError for locationId=%s, evseId=%s',
+                    loc_avail_query.get('locationId'),
+                    evse_key,
+                    exc_info=True)
+                continue
+        return nsuccess, nplugs
 
     def select_locationIds_by_speed(self, speed:str):
         """Get locationIds with specific speed (latest revision only)"""
+        
+        logger.debug(f"Selecting locationIds for speed: {speed}")
 
         sql_script=resources.read_text('sql_scripts.select', 'select_locationIds_by_plugType.sql')
 

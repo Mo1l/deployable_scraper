@@ -1,4 +1,5 @@
 *.json
 *.db
+*.log
 *.egg-info/
 *.pyc
