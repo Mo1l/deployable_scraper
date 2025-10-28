@@ -9,7 +9,6 @@ requires-python = ">=3.8"
 dependencies = [
     "numpy",
     "schedule",
-    "sqlite",
     "scraping-charger-data @ git+https://github.com/NikolajMLund/scraping_charger_data.git"
 ]
 
