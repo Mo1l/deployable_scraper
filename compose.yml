@@ -1,5 +1,5 @@
 services:
-  scraper:
+  scraper-rapid:
     build: .
     volumes:
       - ./data/db:/app/data/db
@@ -9,8 +9,51 @@ services:
     environment:
       - RUN_MODE=scheduled      # Scheduling mode
       - LOG_LEVEL=INFO          # how much info to log
-      - standard_minute_interval=30
-      - fast_minute_interval=15
-      - rapid_minute_interval=5
-      - location_day_interval=7
+      - SCRAPER_TYPE=rapid
+      - MINUTE_INTERVAL=5
+      #- LOCATION_DAY_INTERVAL=7
+    restart: unless-stopped
+  scraper-fast:
+    build: .
+    volumes:
+      - ./data/db:/app/data/db
+      - ./data/logs:/app/data/logs
+    command: python src/main_scripts/run_scraper_schedule.py
+    working_dir: /app
+    environment:
+      - RUN_MODE=scheduled      # Scheduling mode
+      - LOG_LEVEL=INFO          # how much info to log
+      - SCRAPER_TYPE=fast
+      - MINUTE_INTERVAL=15
+      #- LOCATION_DAY_INTERVAL=7
+    restart: unless-stopped
+
+  scraper-standard:
+    build: .
+    volumes:
+      - ./data/db:/app/data/db
+      - ./data/logs:/app/data/logs
+    command: python src/main_scripts/run_scraper_schedule.py
+    working_dir: /app
+    environment:
+      - RUN_MODE=scheduled      # Scheduling mode
+      - LOG_LEVEL=INFO          # how much info to log
+      - SCRAPER_TYPE=standard
+      - MINUTE_INTERVAL=60
+      #- LOCATION_DAY_INTERVAL=7
+    restart: unless-stopped
+
+  scraper-locations:
+    build: .
+    volumes:
+      - ./data/db:/app/data/db
+      - ./data/logs:/app/data/logs
+    command: python src/main_scripts/run_scraper_schedule.py
+    working_dir: /app
+    environment:
+      - RUN_MODE=scheduled      # Scheduling mode
+      - LOG_LEVEL=INFO          # how much info to log
+      - SCRAPER_TYPE=locations
+      #- MINUTE_INTERVAL=60
+      - LOCATION_DAY_INTERVAL=7
     restart: unless-stopped

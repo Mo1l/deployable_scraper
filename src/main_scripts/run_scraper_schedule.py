@@ -107,32 +107,25 @@ if __name__ == "__main__":
     logger.info("Scraper Application Starting")
     logger.info("="*60)
     
-    run_mode = os.environ.get('RUN_MODE', 'once') # defaults to 'once if RUN_MODE does not exist
 
     # On startup always populate locations table, and initialize database if it does not exist
     run_locations()
 
-    if run_mode == 'scheduled':
+    # retrieving scraper settings
+    speed = os.environ.get('SCRAPER_TYPE').capitalize()
+    minute_interval=int(os.environ.get('MINUTE_INTERVAL'))
+    location_day_interval=int(os.environ.get('LOCATION_DAY_INTERVAL'),'9999')
+    run_mode = os.environ.get('RUN_MODE', 'once') # defaults to 'once if RUN_MODE does not exist
+
+    if (run_mode == 'scheduled') and (speed in ['Standard', 'Fast', 'Rapid']):
         logger.info('Initializing run schedule')
-        """SET THE SCHEDULING HERE"""
-        standard_minute_interval = int(os.environ.get('standard_minute_interval'))
-        fast_minute_interval=int(os.environ.get('fast_minute_interval'))
-        rapid_minute_interval=int(os.environ.get('rapid_minute_interval'))
-        location_day_interval=int(os.environ.get('location_day_interval'))
 
         logger.info(f"Schedule configuration:")
-        logger.info(f"  - Standard: every {standard_minute_interval} minutes")
-        logger.info(f"  - Fast: every {fast_minute_interval} minutes")
-        logger.info(f"  - Rapid: every {rapid_minute_interval} minutes")
-        logger.info(f"  - Locations: every {location_day_interval} days")
+        logger.info(f"  - Scraper type: {speed}")
+        logger.info(f"  - Scrape interval: every {minute_interval} minutes")
 
         # Set the schedule - availability: 
-        schedule.every(standard_minute_interval).minutes.do(run_avail, speed='Standard')
-        schedule.every(fast_minute_interval).minutes.do(run_avail, speed='Fast')
-        schedule.every(rapid_minute_interval).minutes.do(run_avail, speed='Rapid')
-
-        # set the schedule - locations
-        schedule.every(location_day_interval).days.do(run_locations)
+        schedule.every(minute_interval).minutes.do(run_avail, speed=speed)
 
         logger.info("Schedule initialized. Starting scheduled execution loop")
 
@@ -140,9 +133,29 @@ if __name__ == "__main__":
         while True:
             schedule.run_pending()
             time.sleep(60)  # Check every x seconds
-            
+    
+    elif (run_mode == 'scheduled') and (speed == 'Locations'):
+        logger.info('Initializing run schedule')
+
+        logger.info(f"Schedule configuration:")
+        logger.info(f"  - Scraper type: Locations")
+        logger.info(f"  - Scrape interval: Every {location_day_interval} days")
+        
+        schedule.every(location_day_interval).days.do(run_locations)
+        
+        while True:
+            schedule.run_pending()
+            time.sleep(60)  # Check every x seconds
+
+    elif (run_mode == 'once') and (speed == 'Locations'):
+        logger.info('Ran locations scraper.')
+    
+    elif (run_mode == 'once') and (speed in ['Standard', 'Fast', 'Rapid']):
+        logger.info('Initializing run schedule')
+        logger.info(f"Schedule configuration:")
+        logger.info(f"  - Scraper type: {speed}")
+        logger.info(f"  - Scrape interval: Once")
+
+        run_avail(speed=speed)
     else:
-        logger.info(f"Running scrapers once.")
-        run_avail(speed='Standard')
-        run_avail(speed='Fast')
-        run_avail(speed='Rapid')
+        logger.warning(f"Scraper configs could not be resolved.")
