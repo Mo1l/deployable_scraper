@@ -4,4 +4,6 @@ The database has to be adapted to the use case and the api being called, but can
 
 planned features and updates: postgredatabase, scheduling using chron, logging for easier debugging and mail notifications.  
 
-just clone the repository onto your raspberry pi (or what you want to deploy on) and run the start_container.sh script.
+Implemeted: logging.
+
+To get started, just clone the repository onto your raspberry pi (or what you want to deploy on) and run the start_container.sh script.
