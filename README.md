@@ -4,4 +4,4 @@ The database has to be adapted to the use case and the api being called, but can
 
 planned features and updates: postgredatabase, scheduling using chron, logging for easier debugging and mail notifications.  
 
-just clone the repository onto you raspberry pi and run the commands ... (to be continued)
+just clone the repository onto your raspberry pi (or what you want to deploy on) and run the command .sh script.
