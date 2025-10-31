@@ -114,7 +114,7 @@ if __name__ == "__main__":
     # retrieving scraper settings
     speed = os.environ.get('SCRAPER_TYPE').capitalize()
     minute_interval=int(os.environ.get('MINUTE_INTERVAL'))
-    location_day_interval=int(os.environ.get('LOCATION_DAY_INTERVAL'), 9999)
+    location_day_interval=int(os.environ.get('LOCATION_DAY_INTERVAL', 9999))
     run_mode = os.environ.get('RUN_MODE', 'once') # defaults to 'once if RUN_MODE does not exist
     max_workers = int(os.environ.get('MAX_WORKERS', 1))
 
