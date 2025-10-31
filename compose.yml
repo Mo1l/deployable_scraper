@@ -1,5 +1,5 @@
 services:
-  scraper-rapid:
+  rapid:
     build: .
     volumes:
       - ./data/db:/app/data/db
@@ -13,7 +13,7 @@ services:
       - MINUTE_INTERVAL=5
       - MAX_WORKERS=1
     restart: unless-stopped
-  scraper-fast:
+  fast:
     build: .
     volumes:
       - ./data/db:/app/data/db
@@ -28,7 +28,7 @@ services:
       - MAX_WORKERS=1
     restart: unless-stopped
 
-  scraper-standard:
+  standard:
     build: .
     volumes:
       - ./data/db:/app/data/db
@@ -43,7 +43,7 @@ services:
       - MAX_WORKERS=1
     restart: unless-stopped
 
-  scraper-locations:
+  locations:
     build: .
     volumes:
       - ./data/db:/app/data/db
