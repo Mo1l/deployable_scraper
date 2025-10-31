@@ -11,7 +11,7 @@ services:
       - LOG_LEVEL=INFO          # how much info to log
       - SCRAPER_TYPE=rapid
       - MINUTE_INTERVAL=5
-      #- LOCATION_DAY_INTERVAL=7
+      - MAX_WORKERS=1
     restart: unless-stopped
   scraper-fast:
     build: .
@@ -25,7 +25,7 @@ services:
       - LOG_LEVEL=INFO          # how much info to log
       - SCRAPER_TYPE=fast
       - MINUTE_INTERVAL=15
-      #- LOCATION_DAY_INTERVAL=7
+      - MAX_WORKERS=1
     restart: unless-stopped
 
   scraper-standard:
@@ -40,7 +40,7 @@ services:
       - LOG_LEVEL=INFO          # how much info to log
       - SCRAPER_TYPE=standard
       - MINUTE_INTERVAL=60
-      #- LOCATION_DAY_INTERVAL=7
+      - MAX_WORKERS=1
     restart: unless-stopped
 
   scraper-locations:
@@ -54,6 +54,5 @@ services:
       - RUN_MODE=scheduled      # Scheduling mode
       - LOG_LEVEL=INFO          # how much info to log
       - SCRAPER_TYPE=locations
-      #- MINUTE_INTERVAL=60
       - LOCATION_DAY_INTERVAL=7
     restart: unless-stopped

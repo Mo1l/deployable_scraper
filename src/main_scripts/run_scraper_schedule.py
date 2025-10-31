@@ -13,7 +13,7 @@ from datetime import datetime
 # Get logger for this module
 logger = logging.getLogger(__name__)
 
-def run_avail(speed): 
+def run_avail(speed:str, max_workers:int): 
     logger.info(f"Starting availability scrape for speed: {speed}")
     
     # create database connection
@@ -37,7 +37,7 @@ def run_avail(speed):
 
     # run scraper
     logger.info("Running availability scraper")
-    availability_scraper.run(max_workers=2)
+    availability_scraper.run(max_workers=max_workers)
     availability = availability_scraper.results
     logger.info(f"Scraping completed. Processing {len(availability)} results")
     
@@ -114,18 +114,20 @@ if __name__ == "__main__":
     # retrieving scraper settings
     speed = os.environ.get('SCRAPER_TYPE').capitalize()
     minute_interval=int(os.environ.get('MINUTE_INTERVAL'))
-    location_day_interval=int(os.environ.get('LOCATION_DAY_INTERVAL'),'9999')
+    location_day_interval=int(os.environ.get('LOCATION_DAY_INTERVAL'), 9999)
     run_mode = os.environ.get('RUN_MODE', 'once') # defaults to 'once if RUN_MODE does not exist
+    max_workers = int(os.environ.get('MAX_WORKERS', 1))
 
     if (run_mode == 'scheduled') and (speed in ['Standard', 'Fast', 'Rapid']):
         logger.info('Initializing run schedule')
 
         logger.info(f"Schedule configuration:")
+        logger.info(f"  - Max workers: using {max_workers} workers")
         logger.info(f"  - Scraper type: {speed}")
         logger.info(f"  - Scrape interval: every {minute_interval} minutes")
 
         # Set the schedule - availability: 
-        schedule.every(minute_interval).minutes.do(run_avail, speed=speed)
+        schedule.every(minute_interval).minutes.do(run_avail, speed=speed, max_workers=max_workers)
 
         logger.info("Schedule initialized. Starting scheduled execution loop")
 
@@ -152,10 +154,11 @@ if __name__ == "__main__":
     
     elif (run_mode == 'once') and (speed in ['Standard', 'Fast', 'Rapid']):
         logger.info('Initializing run schedule')
+        logger.info(f"  - Max workers: using {max_workers} workers")
         logger.info(f"Schedule configuration:")
         logger.info(f"  - Scraper type: {speed}")
         logger.info(f"  - Scrape interval: Once")
 
-        run_avail(speed=speed)
+        run_avail(speed=speed, max_workers=max_workers)
     else:
         logger.warning(f"Scraper configs could not be resolved.")
