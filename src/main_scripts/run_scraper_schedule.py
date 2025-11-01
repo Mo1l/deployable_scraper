@@ -13,7 +13,7 @@ from datetime import datetime
 # Get logger for this module
 logger = logging.getLogger(__name__)
 
-def run_avail(speed:str, max_workers:int): 
+def run_avail(speed:str, max_workers:int, sleep_in_seconds:float): 
     logger.info(f"Starting availability scrape for speed: {speed}")
     
     # create database connection
@@ -27,12 +27,14 @@ def run_avail(speed:str, max_workers:int):
     logger.info(f"Found {len(locids)} locations for speed: {speed}")
 
     # setup scraper
+    options = {'timeout': 30, 'sleep_in_seconds': sleep_in_seconds}
     availability_scraper=avail_scraper(
         keyword='availability',
         identifiers=locids,
         url_re='https://clever.dk/api/chargers/location/{}',
         out_path='./data/',
         save_json = False,
+        options = options,
     )
 
     # run scraper
@@ -117,6 +119,7 @@ if __name__ == "__main__":
     location_day_interval=int(os.environ.get('LOCATION_DAY_INTERVAL', 9999))
     run_mode = os.environ.get('RUN_MODE', 'once') # defaults to 'once if RUN_MODE does not exist
     max_workers = int(os.environ.get('MAX_WORKERS', 1))
+    sleep_in_seconds = float(os.environ.get('SLEEP_IN_SECONDS', 0.0))
 
     if (run_mode == 'scheduled') and (speed in ['Standard', 'Fast', 'Rapid']):
         logger.info('Initializing run schedule')
@@ -127,7 +130,12 @@ if __name__ == "__main__":
         logger.info(f"  - Scrape interval: every {minute_interval} minutes")
 
         # Set the schedule - availability: 
-        schedule.every(minute_interval).minutes.do(run_avail, speed=speed, max_workers=max_workers)
+        schedule.every(minute_interval).minutes.do(
+            run_avail, 
+            speed=speed, 
+            max_workers=max_workers, 
+            sleep_in_seconds=sleep_in_seconds,
+        )
 
         logger.info("Schedule initialized. Starting scheduled execution loop")
 
@@ -159,6 +167,10 @@ if __name__ == "__main__":
         logger.info(f"  - Scraper type: {speed}")
         logger.info(f"  - Scrape interval: Once")
 
-        run_avail(speed=speed, max_workers=max_workers)
+        run_avail(
+            speed=speed, 
+            max_workers=max_workers, 
+            sleep_in_seconds=sleep_in_seconds,
+        )
     else:
         logger.warning(f"Scraper configs could not be resolved.")
