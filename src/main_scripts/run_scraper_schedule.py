@@ -128,6 +128,7 @@ if __name__ == "__main__":
         logger.info(f"  - Max workers: using {max_workers} workers")
         logger.info(f"  - Scraper type: {speed}")
         logger.info(f"  - Scrape interval: every {minute_interval} minutes")
+        logger.info(f"  - sleep between requests: every {sleep_in_seconds} seconds")
 
         # Set the schedule - availability: 
         schedule.every(minute_interval).minutes.do(
@@ -166,6 +167,8 @@ if __name__ == "__main__":
         logger.info(f"Schedule configuration:")
         logger.info(f"  - Scraper type: {speed}")
         logger.info(f"  - Scrape interval: Once")
+        logger.info(f"  - sleep between requests: every {sleep_in_seconds} seconds")
+
 
         run_avail(
             speed=speed, 

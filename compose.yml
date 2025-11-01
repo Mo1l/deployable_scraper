@@ -12,6 +12,7 @@ services:
       - SCRAPER_TYPE=rapid
       - MINUTE_INTERVAL=5
       - MAX_WORKERS=1
+      - SLEEP_IN_SECONDS = 0.1
     restart: unless-stopped
   fast:
     build: .
@@ -26,6 +27,7 @@ services:
       - SCRAPER_TYPE=fast
       - MINUTE_INTERVAL=15
       - MAX_WORKERS=1
+      - SLEEP_IN_SECONDS = 0.1
     restart: unless-stopped
 
   standard:
@@ -41,6 +43,7 @@ services:
       - SCRAPER_TYPE=standard
       - MINUTE_INTERVAL=60
       - MAX_WORKERS=1
+      - SLEEP_IN_SECONDS = 0.1
     restart: unless-stopped
 
   locations:
@@ -55,4 +58,5 @@ services:
       - LOG_LEVEL=INFO          # how much info to log
       - SCRAPER_TYPE=locations
       - LOCATION_DAY_INTERVAL=7
+
     restart: unless-stopped
